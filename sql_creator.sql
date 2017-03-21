@@ -4,67 +4,91 @@ CREATE TABLE symbols (
 	`id` 			TINYINT 	UNSIGNED NOT NULL AUTO_INCREMENT,
 	`reference` 	VARCHAR(10) COLLATE utf8_bin NOT NULL,
 	`description`	TEXT,
-	`active`		BOOLEAN NOT NULL DEFAULT FALSE,
+	`state`		    enum('inactive','standby','simulation', 'active') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'inactive',
 	PRIMARY KEY (`id`),
 	UNIQUE KEY `reference` (`reference`)
 );
 
-INSERT INTO `symbols` (`reference`, `description`, `active`)
+INSERT INTO `symbols` (`reference`, `description`)
 VALUES 
-("EURAUD", "Instrument, which price is based on quotations of Euro to Australian Dollar on the interbank market.", false),
-("AUDNZD", "Instrument, which price is based on quotations of Australian Dollar to New Zealand Dollar on the interbank market.", false),
-("GBPJPY", "Instrument, which price is based on quotations of British Pound to Japanese Yen on the interbank market.", false),
-("USDSEK", "Instrument, which price is based on quotations of American Dollar to Swedish Krona on the interbank market.", false),
-("EURJPY", "Instrument, which price is based on quotations of Euro to Japanese Yen on the interbank market.", false),
-("CHFPLN", "Instrument, which price is based on quotations of Swiss Frank to Polish Zloty on the interbank market.", false),
-("USDJPY", "Instrument, which price is based on quotations of American Dollar to Japanese Yen on the interbank market.", false),
-("USDMXN", "Instrument, which price is based on quotations of American Dollar to Mexican Peso on the interbank market.", false),
-("USDILS", "Instrument, which price is based on quotations of American Dollar to Israeli Shekel on the interbank market.", false),
-("AUDJPY", "Instrument, which price is based on quotations of Australian Dollar to Japanese Yen on the interbank market.", false),
-("GBPCAD", "Instrument, which price is based on quotations of British Pound to Canadian Dollar on the interbank market.", false),
-("GBPNZD", "Instrument, which price is based on quotations of British Pound to New Zealand Dollar on the interbank market.", false),
-("AUDCHF", "Instrument, which price is based on quotations of Australian Dollar to Swiss Frank on the interbank market.", false),
-("NZDUSD", "Instrument, which price is based on quotations of New Zealand Dollar to American Dollar on the interbank market.", false),
-("EURRON", "Instrument, which price is based on quotations of Euro to Romanian Leu on the interbank market.", false),
-("USDZAR", "Instrument, which price is based on quotations of American Dollar to South African Rand on the interbank market.", false),
-("EURSEK", "Instrument, which price is based on quotations of Euro to Swedish Krona on the interbank market.", false),
-("USDCLP", "Instrument, which price is based on quotations of American Dollar to Chilean Peso on the interbank market.", false),
-("CHFJPY", "Instrument, which price is based on quotations of Swiss Frank to Japanese Yen on the interbank market.", false),
-("GBPAUD", "Instrument, which price is based on quotations of British Pound to Australian Dollar on the interbank market.", false),
-("GBPCHF", "Instrument, which price is based on quotations of British Pound to Swiss Frank on the interbank market.", false),
-("EURNOK", "Instrument, which price is based on quotations of Euro to Norwegian Krone on the interbank market.", false),
-("GBPPLN", "Instrument, which price is based on quotations of British Pound to Polish Zloty on the interbank market.", false),
-("USDCHF", "Instrument, which price is based on quotations of American Dollar to Swiss Frank on the interbank market.", false),
-("CADJPY", "Instrument, which price is based on quotations of Canadian Dollar to Japanese Yen on the interbank market.", false),
-("USDTRY", "Instrument, which price is based on quotations of American Dollar to Turkish Lira on the interbank market.", false),
-("GBPUSD", "Instrument, which price is based on quotations of British Pound to American Dollar on the interbank market.", false),
-("EURCZK", "Instrument, which price is based on quotations of Euro to Czech Koruna on the interbank market.", false),
-("USDNOK", "Instrument, which price is based on quotations of American Dollar to Norwegian Krone on the interbank market.", false),
-("EURCHF", "Instrument, which price is based on quotations of Euro to Swiss Frank on the interbank market.", false),
-("USDHUF", "Instrument, which price is based on quotations of American Dollar to Hungarian Forint on the interbank market.", false),
-("EURHUF", "Instrument, which price is based on quotations of Euro to Hungarian Forint on the interbank market.", false),
-("AUDUSD", "Instrument, which price is based on quotations of Australian Dollar to American Dollar on the interbank market.", false),
-("USDCZK", "Instrument, which price is based on quotations of American Dollar to Czech Koruna on the interbank market.", false),
-("USDPLN", "Instrument, which price is based on quotations of American Dollar to Polish Zloty on the interbank market.", false),
-("NZDJPY", "Instrument, which price is based on quotations of New Zealand Dollar to Japanese Yen on the interbank market.", false),
-("EURNZD", "Instrument, which price is based on quotations of Euro to New Zealand Dollar on the interbank market.", false),
-("EURCAD", "Instrument, which price is based on quotations of Euro to Canadian Dollar on the interbank market.", false),
-("EURGBP", "Instrument, which price is based on quotations of Euro to British Pound on the interbank market.", false),
-("USDRON", "Instrument, which price is based on quotations of American Dollar to Romanian Leu on the interbank market.", false),
-("EURUSD", "Instrument, which price is based on quotations of Euro to American Dollar on the interbank market.", true),
-("EURPLN", "Instrument, which price is based on quotations of Euro to Polish Zloty on the interbank market.", false),
-("CHFHUF", "Instrument, which price is based on quotations of Swiss Frank to Hungarian Forint on the interbank market.", false),
-("CADCHF", "Instrument, which price is based on quotations of Canadian Dollar to Swiss Frank on the interbank market.", false),
-("EURTRY", "Instrument, which price is based on quotations of Euro to Turkish Lira on the interbank market.", false),
-("AUDCAD", "Instrument, which price is based on quotations of Australian Dollar to Canadian Dollar on the interbank market.", false),
-("USDBRL", "Instrument, which price is based on quotations of American Dollar to Brazilian Real on the interbank market.", false),
-("USDCAD", "Instrument, which price is based on quotations of American Dollar to Canadian Dollar on the interbank market.", false),
-("NZDCAD", "Instrument, which price is based on quotations of New Zealand Dollar to Canadian Dollar on the interbank market.", false);
+("EURAUD", "Instrument, which price is based on quotations of Euro to Australian Dollar on the interbank market."),
+("AUDNZD", "Instrument, which price is based on quotations of Australian Dollar to New Zealand Dollar on the interbank market."),
+("GBPJPY", "Instrument, which price is based on quotations of British Pound to Japanese Yen on the interbank market."),
+("USDSEK", "Instrument, which price is based on quotations of American Dollar to Swedish Krona on the interbank market."),
+("EURJPY", "Instrument, which price is based on quotations of Euro to Japanese Yen on the interbank market."),
+("CHFPLN", "Instrument, which price is based on quotations of Swiss Frank to Polish Zloty on the interbank market."),
+("USDJPY", "Instrument, which price is based on quotations of American Dollar to Japanese Yen on the interbank market."),
+("USDMXN", "Instrument, which price is based on quotations of American Dollar to Mexican Peso on the interbank market."),
+("USDILS", "Instrument, which price is based on quotations of American Dollar to Israeli Shekel on the interbank market."),
+("AUDJPY", "Instrument, which price is based on quotations of Australian Dollar to Japanese Yen on the interbank market."),
+("GBPCAD", "Instrument, which price is based on quotations of British Pound to Canadian Dollar on the interbank market."),
+("GBPNZD", "Instrument, which price is based on quotations of British Pound to New Zealand Dollar on the interbank market."),
+("AUDCHF", "Instrument, which price is based on quotations of Australian Dollar to Swiss Frank on the interbank market."),
+("NZDUSD", "Instrument, which price is based on quotations of New Zealand Dollar to American Dollar on the interbank market."),
+("EURRON", "Instrument, which price is based on quotations of Euro to Romanian Leu on the interbank market."),
+("USDZAR", "Instrument, which price is based on quotations of American Dollar to South African Rand on the interbank market."),
+("EURSEK", "Instrument, which price is based on quotations of Euro to Swedish Krona on the interbank market."),
+("USDCLP", "Instrument, which price is based on quotations of American Dollar to Chilean Peso on the interbank market."),
+("CHFJPY", "Instrument, which price is based on quotations of Swiss Frank to Japanese Yen on the interbank market."),
+("GBPAUD", "Instrument, which price is based on quotations of British Pound to Australian Dollar on the interbank market."),
+("GBPCHF", "Instrument, which price is based on quotations of British Pound to Swiss Frank on the interbank market."),
+("EURNOK", "Instrument, which price is based on quotations of Euro to Norwegian Krone on the interbank market."),
+("GBPPLN", "Instrument, which price is based on quotations of British Pound to Polish Zloty on the interbank market."),
+("USDCHF", "Instrument, which price is based on quotations of American Dollar to Swiss Frank on the interbank market."),
+("CADJPY", "Instrument, which price is based on quotations of Canadian Dollar to Japanese Yen on the interbank market."),
+("USDTRY", "Instrument, which price is based on quotations of American Dollar to Turkish Lira on the interbank market."),
+("GBPUSD", "Instrument, which price is based on quotations of British Pound to American Dollar on the interbank market."),
+("EURCZK", "Instrument, which price is based on quotations of Euro to Czech Koruna on the interbank market."),
+("USDNOK", "Instrument, which price is based on quotations of American Dollar to Norwegian Krone on the interbank market."),
+("EURCHF", "Instrument, which price is based on quotations of Euro to Swiss Frank on the interbank market."),
+("USDHUF", "Instrument, which price is based on quotations of American Dollar to Hungarian Forint on the interbank market."),
+("EURHUF", "Instrument, which price is based on quotations of Euro to Hungarian Forint on the interbank market."),
+("AUDUSD", "Instrument, which price is based on quotations of Australian Dollar to American Dollar on the interbank market."),
+("USDCZK", "Instrument, which price is based on quotations of American Dollar to Czech Koruna on the interbank market."),
+("USDPLN", "Instrument, which price is based on quotations of American Dollar to Polish Zloty on the interbank market."),
+("NZDJPY", "Instrument, which price is based on quotations of New Zealand Dollar to Japanese Yen on the interbank market."),
+("EURNZD", "Instrument, which price is based on quotations of Euro to New Zealand Dollar on the interbank market."),
+("EURCAD", "Instrument, which price is based on quotations of Euro to Canadian Dollar on the interbank market."),
+("EURGBP", "Instrument, which price is based on quotations of Euro to British Pound on the interbank market."),
+("USDRON", "Instrument, which price is based on quotations of American Dollar to Romanian Leu on the interbank market."),
+("EURUSD", "Instrument, which price is based on quotations of Euro to American Dollar on the interbank market."),
+("EURPLN", "Instrument, which price is based on quotations of Euro to Polish Zloty on the interbank market."),
+("CHFHUF", "Instrument, which price is based on quotations of Swiss Frank to Hungarian Forint on the interbank market."),
+("CADCHF", "Instrument, which price is based on quotations of Canadian Dollar to Swiss Frank on the interbank market."),
+("EURTRY", "Instrument, which price is based on quotations of Euro to Turkish Lira on the interbank market."),
+("AUDCAD", "Instrument, which price is based on quotations of Australian Dollar to Canadian Dollar on the interbank market."),
+("USDBRL", "Instrument, which price is based on quotations of American Dollar to Brazilian Real on the interbank market."),
+("USDCAD", "Instrument, which price is based on quotations of American Dollar to Canadian Dollar on the interbank market."),
+("NZDCAD", "Instrument, which price is based on quotations of New Zealand Dollar to Canadian Dollar on the interbank market.");
 
-CREATE OR REPLACE VIEW `v_activ_symbols`
+CREATE OR REPLACE VIEW `v_symbols_active`
 AS SELECT `s`.`id`, `s`.`reference`, `s`.`description`
 FROM `symbols` AS s
-WHERE `s`.`active` 
+WHERE `s`.`state` = "active"
+ORDER BY `s`.`id` ASC;
+
+CREATE OR REPLACE VIEW `v_symbols_inactive`
+AS SELECT `s`.`id`, `s`.`reference`, `s`.`description`
+FROM `symbols` AS s
+WHERE `s`.`state` = "inactive"
+ORDER BY `s`.`id` ASC;
+
+CREATE OR REPLACE VIEW `v_symbols_standby`
+AS SELECT `s`.`id`, `s`.`reference`, `s`.`description`
+FROM `symbols` AS s
+WHERE `s`.`state` = "standby"
+ORDER BY `s`.`id` ASC;
+
+CREATE OR REPLACE VIEW `v_symbols_simulation`
+AS SELECT `s`.`id`, `s`.`reference`, `s`.`description`
+FROM `symbols` AS s
+WHERE `s`.`state` = "simulation"
+ORDER BY `s`.`id` ASC;
+
+CREATE OR REPLACE VIEW `v_symbols_not_inactive`
+AS SELECT `s`.`id`, `s`.`reference`, `s`.`description`
+FROM `symbols` AS s
+WHERE `s`.`state` != "inactive"
 ORDER BY `s`.`id` ASC;
 
 CREATE TABLE `stock_values` (
@@ -72,8 +96,7 @@ CREATE TABLE `stock_values` (
  	`symbol_id`		TINYINT 	UNSIGNED  NOT NULL,
  	`bid_at`		DATETIME 	NOT NULL,
  	`last_bid`		MEDIUMINT 	UNSIGNED NOT NULL,
- 	`created_at`	DATETIME 	NOT NULL,
- 	`updated_at`	DATETIME 	NOT NULL,
+	`created_at`    timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
  	PRIMARY KEY (`id`),
 	CONSTRAINT stock_values_symbol_types_reference FOREIGN KEY symbol_id(symbol_id) REFERENCES symbols (id),
  	UNIQUE KEY `symbol` (`symbol_id`,`bid_at`),
@@ -83,6 +106,7 @@ CREATE TABLE `stock_values` (
 CREATE TABLE `stock_calculation` (
 	`stock_value_id`	INT UNSIGNED NOT NULL,
 	`calculations`		text        COLLATE utf8_unicode_ci,
+	`created_at`        timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
  	PRIMARY KEY (`stock_value_id`),
 	CONSTRAINT stock_id_reference FOREIGN KEY stock_value_id(stock_value_id) REFERENCES stock_values (id)
 );
