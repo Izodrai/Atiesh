@@ -96,6 +96,7 @@ CREATE TABLE `stock_values` (
  	`symbol_id`		TINYINT 	UNSIGNED  NOT NULL,
  	`bid_at`		DATETIME 	NOT NULL,
  	`last_bid`		MEDIUMINT 	UNSIGNED NOT NULL,
+ 	`calculations`		text,
 	`created_at`    timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
  	PRIMARY KEY (`id`),
 	CONSTRAINT stock_values_symbol_types_reference FOREIGN KEY symbol_id(symbol_id) REFERENCES symbols (id),
@@ -103,13 +104,8 @@ CREATE TABLE `stock_values` (
  	KEY `bid_at` (`bid_at`)
 );
 
-CREATE TABLE `stock_calculation` (
-	`stock_value_id`	INT UNSIGNED NOT NULL,
-	`calculations`		text        COLLATE utf8_unicode_ci,
-	`created_at`        timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
- 	PRIMARY KEY (`stock_value_id`),
-	CONSTRAINT stock_id_reference FOREIGN KEY stock_value_id(stock_value_id) REFERENCES stock_values (id)
-);
+
+ALTER TABLE stock_values ADD COLUMN calculation text AFTER `last_bid`;
 
 /*
 CREATE TABLE `stock_analyse` (
