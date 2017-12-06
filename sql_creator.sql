@@ -1,5 +1,7 @@
 USE market;
 
+/* ---- TABLES de run ---- */
+
 CREATE TABLE `symbols` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `reference` varchar(10) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
@@ -64,31 +66,6 @@ VALUES
 (48, "USDCAD", "Instrument, which price is based on quotations of American Dollar to Canadian Dollar on the interbank market.", 50.000, 0.010, 0.010, "inactive"),
 (49, "NZDCAD", "Instrument, which price is based on quotations of New Zealand Dollar to Canadian Dollar on the interbank market.", 50.000, 0.010, 0.010, "inactive");
 
-CREATE OR REPLACE VIEW `v_symbols_active`
-AS SELECT `s`.`id`, `s`.`reference`, `s`.`description`
-FROM `symbols` AS s
-WHERE `s`.`state` = "active"
-ORDER BY `s`.`id` ASC;
-
-CREATE OR REPLACE VIEW `v_symbols_inactive`
-AS SELECT `s`.`id`, `s`.`reference`, `s`.`description`
-FROM `symbols` AS s
-WHERE `s`.`state` = "inactive"
-ORDER BY `s`.`id` ASC;
-
-CREATE OR REPLACE VIEW `v_symbols_standby`
-AS SELECT `s`.`id`, `s`.`reference`, `s`.`description`
-FROM `symbols` AS s
-WHERE `s`.`state` = "standby"
-ORDER BY `s`.`id` ASC;
-
-CREATE OR REPLACE VIEW `v_symbols_not_inactive`
-AS SELECT `s`.`id`, `s`.`reference`, `s`.`description`
-FROM `symbols` AS s
-WHERE `s`.`state` != "inactive"
-ORDER BY `s`.`id` ASC;
-
-
 CREATE TABLE `stock_values` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `symbol_id` tinyint(3) unsigned NOT NULL,
@@ -137,17 +114,123 @@ CREATE TABLE `trades` (
   CONSTRAINT `trades_types_reference` FOREIGN KEY (`trade_type_id`) REFERENCES `trades_type` (`id`)
 );
 
-CREATE TABLE `configuration` (
-  `configuration` text
+
+
+/* ---- TABLES de configuration ---- */
+
+
+CREATE TABLE `c_configuration` (
+  `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `env` ENUM("dev","stage","run"),
+  `sulfuras_log_file` varchar(50) NOT NULL,
+  `valanyr_log_file` varchar(50) NOT NULL,
+  `frostmourne_url` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `sulfuras_step_retrieve` varchar(10) NOT NULL,
+  `valanyr_step_retrieve` varchar(10) NOT NULL,
+  `from` varchar(10) NOT NULL,
+  `to` varchar(10) NOT NULL,
+  `sulfuras_tmpl` varchar(50) NOT NULL,
+  `valanyr_tmpl` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `sulfuras_file` (`sulfuras_log_file`),
+  UNIQUE KEY `valanyr_log_file` (`valanyr_log_file`)
 );
 
+INSERT INTO `c_configuration` (`id`, `env`, `sulfuras_log_file`, `valanyr_log_file`, `frostmourne_url`, `token`, `sulfuras_step_retrieve`, `valanyr_step_retrieve`, `from`, `to`, `sulfuras_tmpl`, `valanyr_tmpl`)
+VALUES 
+(1, "dev", "/home/vp/develop/self/go/sulfuras/sulfuras.log", "/home/vp/develop/self/go/valanyr/valanyr.log", "http://dataapi20171019030453.azurewebsites.net/api/bids/", "test_token", "2m30s", "2m30s", "2017-07-01", "now", "/home/vp/market/lib/web/tmpl/", "");
 
 
 
+CREATE TABLE `c_retrieve_periodes` (
+  `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `day` varchar(9) NOT NULL,
+  `deactivated` boolean DEFAULT false NOT NULL,
+  `limited` boolean DEFAULT false NOT NULL,
+  `start` time DEFAULT "00:00:00" NOT NULL,
+  `end` time DEFAULT "00:00:00" NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `day` (`day`)
+);
 
+INSERT INTO `c_retrieve_periodes` (`id`, `day`, `deactivated`,`limited`,`start`, `end`)
+VALUES 
+(1,"Monday",false,false,"00:00:00","00:00:00"),
+(2,"Tuesday",false,false,"00:00:00","00:00:00"),
+(3,"Wednesday",false,false,"00:00:00","00:00:00"),
+(4,"Thursday",false,false,"00:00:00","00:00:00"),
+(5,"Friday",false,true,"00:00:00","22:00:00"),
+(6,"Saturday",true,false,"","00:00:00"),
+(7,"Sunday",false,true,"22:00:00","23:59:59");
 
+CREATE TABLE `c_configuration_retrieve_periodes` (
+  `configuration_id` tinyint(3) unsigned NOT NULL,
+  `retrieve_periode_id` tinyint(3) unsigned NOT NULL,
+  PRIMARY KEY (`configuration_id`,`retrieve_periode_id`),
+  CONSTRAINT `configuration_reference` FOREIGN KEY (`configuration_id`) REFERENCES `c_configuration` (`id`),
+  CONSTRAINT `retrieve_periodes_reference` FOREIGN KEY (`retrieve_periode_id`) REFERENCES `c_retrieve_periodes` (`id`)
+);
 
+INSERT INTO `c_configuration_retrieve_periodes` (`configuration_id`, `retrieve_periode_id`)
+VALUES 
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4),
+(1, 5),
+(1, 6),
+(1, 7);
 
+CREATE TABLE `c_calculations_type` (
+  `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `reference` varchar(10) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `active` boolean NOT NULL DEFAULT false,
+  
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `reference` (`reference`)
+);
 
+INSERT INTO `c_calculations_type` (`id`, `reference`,`active`)
+VALUES 
+(1, "sma", true),
+(2, "ema", false);
 
+CREATE TABLE `c_calculations` (
+  `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `type_id` tinyint(3) unsigned NOT NULL,
+  `reference` varchar(10) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  
+  PRIMARY KEY (`id`),
+  CONSTRAINT `calculation_type` FOREIGN KEY (`type_id`) REFERENCES `c_calculations_type` (`id`)
+);
 
+INSERT INTO `c_calculations` (`id`, `type_id`, `reference`)
+VALUES 
+(1, 1, "6"),
+(2, 1, "12"),
+(3, 1, "24"),
+(4, 1, "48"),
+(5, 2, "6"),
+(6, 2, "12"),
+(7, 2, "24"),
+(8, 2, "48");
+
+CREATE TABLE `c_configuration_calculations` (
+  `configuration_id` tinyint(3) unsigned NOT NULL,
+  `calculation_id` tinyint(3) unsigned NOT NULL,
+  PRIMARY KEY (`configuration_id`,`calculation_id`),
+  CONSTRAINT `configuration_reference_cc` FOREIGN KEY (`configuration_id`) REFERENCES `c_configuration` (`id`),
+  CONSTRAINT `configuration_calculations_reference` FOREIGN KEY (`calculation_id`) REFERENCES `c_calculations` (`id`)
+);
+
+INSERT INTO `c_configuration_calculations` (`configuration_id`, `calculation_id`)
+VALUES 
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4),
+(1, 5),
+(1, 6),
+(1, 7),
+(1, 8);
