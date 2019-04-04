@@ -28,3 +28,10 @@ INSERT IGNORE INTO r_stock_values (id, symbol_id, bid_at, last_bid, calculations
 SELECT id, symbol_id, bid_at, last_bid, calculations, created_at
 FROM market_dev.stock_values
 LIMIT 50000;
+
+
+
+SELECT u.login, u.pwd, u.type, u.env, u.token, c.log_file, c.frostmourne_url, 
+c.from, c.to, c.retrieve_step FROM c_sulfuras_configuration AS c INNER JOIN c_xtb_users AS u ON c.data_retriever_id = u.id WHERE c.id = 1;
+
+

@@ -5,21 +5,19 @@ USE market;
 /* -------------------------------------------------*/
 
 
-CREATE TABLE `c_xtb_users` (
+CREATE OR REMPLACE TABLE `c_xtb_users` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `env` ENUM("real","stage"),
   `type` ENUM("data","bid"),
   `login` varchar(255) NOT NULL,
   `pwd` varchar(255) NOT NULL,
-  `token` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `login` (`login`),
-  UNIQUE KEY `token` (`token`)
+  UNIQUE KEY `login` (`login`)
 );
 
-INSERT INTO `c_xtb_users` (`id`, `env`, `type`, `login`,`pwd`,`token`)
+INSERT INTO `c_xtb_users` (`id`, `env`, `type`, `login`,`pwd`)
 VALUES 
-(1,"real","data","1077370","In_t@rt1flette_we_trust","init");
+(1,"real","data","1077370","In_t@rt1flette_we_trust");
 
 CREATE TABLE `c_sulfuras_configuration` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
@@ -42,7 +40,7 @@ VALUES
 /* ---- TABLES de configuration retrieve_periodes ---- */
 /* ----------------------------------------------------*/
 
-CREATE TABLE `c_retrieve_periodes` (
+CREATE OR REMPLACE TABLE `c_retrieve_periodes` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `day` varchar(9) NOT NULL,
   `deactivated` boolean DEFAULT false NOT NULL,
@@ -63,7 +61,7 @@ VALUES
 (6,"Saturday",true,false,"00:00:00","00:00:00"),
 (7,"Sunday",false,true,"22:00:00","23:59:59");
 
-CREATE TABLE `c_sulfuras_configuration_retrieve_periodes` (
+CREATE OR REMPLACE TABLE `c_sulfuras_configuration_retrieve_periodes` (
   `sulfuras_configuration_id` tinyint(3) unsigned NOT NULL,
   `retrieve_periode_id` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY (`sulfuras_configuration_id`,`retrieve_periode_id`),
@@ -85,7 +83,7 @@ VALUES
 /* ---- TABLES de configuration calculations ---- */
 /* -----------------------------------------------*/
 
-CREATE TABLE `c_calculations_type` (
+CREATE OR REMPLACE TABLE `c_calculations_type` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `reference` varchar(10) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `active` boolean NOT NULL DEFAULT false,
@@ -96,12 +94,16 @@ CREATE TABLE `c_calculations_type` (
 
 INSERT INTO `c_calculations_type` (`id`, `reference`,`active`)
 VALUES 
-(1, "sma", true),
-(2, "ema", false);
+(1, "ama", true),
+(2, "ema", true),
+(3, "pma", true),
+(4, "macd", true),
+(5, "epma", false);
 
-CREATE TABLE `c_calculations` (
+CREATE OR REMPLACE TABLE `c_calculations` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `type_id` tinyint(3) unsigned NOT NULL,
+  `reference` text NOT NULL,
   `reference` varchar(10) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   
   PRIMARY KEY (`id`),
@@ -110,16 +112,12 @@ CREATE TABLE `c_calculations` (
 
 INSERT INTO `c_calculations` (`id`, `type_id`, `reference`)
 VALUES 
-(1, 1, "6"),
-(2, 1, "12"),
-(3, 1, "24"),
-(4, 1, "48"),
-(5, 2, "6"),
-(6, 2, "12"),
-(7, 2, "24"),
-(8, 2, "48");
+(1, 1, " "),
+(2, 2, " "),
+(3, 3, " "),
+(4, 4, " ");
 
-CREATE TABLE `c_sulfuras_configuration_calculations` (
+CREATE OR REMPLACE TABLE `c_sulfuras_configuration_calculations` (
   `sulfuras_configuration_id` tinyint(3) unsigned NOT NULL,
   `calculation_id` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY (`sulfuras_configuration_id`,`calculation_id`),
@@ -132,9 +130,5 @@ VALUES
 (1, 1),
 (1, 2),
 (1, 3),
-(1, 4),
-(1, 5),
-(1, 6),
-(1, 7),
-(1, 8);
+(1, 4);
 
